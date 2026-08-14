@@ -40,7 +40,7 @@ class AppTheme {
     colorSchemeSeed: AppColors.mintDark,
     scaffoldBackgroundColor: AppColors.background,
     fontFamily: 'Poppins',
-    cardTheme: const CardTheme(
+    cardTheme: const CardThemeData(
       color: AppColors.cardColor,
       elevation: 2,
       shadowColor: Color(0x223A3F47),
@@ -95,7 +95,7 @@ class AppTheme {
     colorSchemeSeed: AppColors.mintDark,
     scaffoldBackgroundColor: AppColors.surfaceDark,
     fontFamily: 'Poppins',
-    cardTheme: const CardTheme(
+    cardTheme: const CardThemeData(
       color: AppColors.cardColorDark,
       elevation: 2,
       shadowColor: Color(0x66000000),
