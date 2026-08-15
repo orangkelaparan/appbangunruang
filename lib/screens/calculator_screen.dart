@@ -65,30 +65,41 @@ _CalcResult calculate(String id, Map<String, double> values) {
       }
       break;
     case 'segitiga':
-      final a = values['alas']!;
-      final t = values['tinggi']!;
-      final sa = values['sisiA']!;
-      final sb = values['sisiB']!;
-      final sc = values['sisiC']!;
-      if (a <= 0) errors['alas'] = 'Alas harus lebih dari 0';
-      if (t <= 0) errors['tinggi'] = 'Tinggi harus lebih dari 0';
-      if (sa <= 0) errors['sisiA'] = 'Sisi harus lebih dari 0';
-      if (sb <= 0) errors['sisiB'] = 'Sisi harus lebih dari 0';
-      if (sc <= 0) errors['sisiC'] = 'Sisi harus lebih dari 0';
-      if (sa + sb <= sc || sa + sc <= sb || sb + sc <= sa) {
+      // Akses aman: jika ada ID input yang tidak terdaftar di map, tampilkan
+      // error informatif alih-alih crash (null check operator on null value).
+      final a = values['alas'];
+      final t = values['tinggi'];
+      final sa = values['sisiA'];
+      final sb = values['sisiB'];
+      final sc = values['sisiC'];
+      if (a == null) { errors['alas'] = 'Alas belum terisi'; }
+      else if (a <= 0) { errors['alas'] = 'Alas harus lebih dari 0'; }
+      if (t == null) { errors['tinggi'] = 'Tinggi belum terisi'; }
+      else if (t <= 0) { errors['tinggi'] = 'Tinggi harus lebih dari 0'; }
+      if (sa == null) { errors['sisiA'] = 'Sisi A belum terisi'; }
+      else if (sa <= 0) { errors['sisiA'] = 'Sisi harus lebih dari 0'; }
+      if (sb == null) { errors['sisiB'] = 'Sisi B belum terisi'; }
+      else if (sb <= 0) { errors['sisiB'] = 'Sisi harus lebih dari 0'; }
+      if (sc == null) { errors['sisiC'] = 'Sisi C belum terisi'; }
+      else if (sc <= 0) { errors['sisiC'] = 'Sisi harus lebih dari 0'; }
+      // Validasi ketidaksamaan segitiga hanya dijalankan ketika semua sisi
+      // sudah terisi dan bernilai positif (hindari error prematur).
+      if (a != null && t != null && sa != null && sb != null && sc != null &&
+          sa > 0 && sb > 0 && sc > 0 &&
+          (sa + sb <= sc || sa + sc <= sb || sb + sc <= sa)) {
         errors['sisiC'] = 'Ketiga sisi tidak dapat membentuk segitiga';
       }
       if (errors.isEmpty) {
         hasil.add((
           nama: 'Luas',
-          formula: 'Luas = ½ × alas × tinggi = ½ × ${formatAngka(a)} × ${formatAngka(t)}',
-          value: formatAngka(luasSegitiga(a, t)),
+          formula: 'Luas = ½ × alas × tinggi = ½ × ${formatAngka(a ?? 0)} × ${formatAngka(t ?? 0)}',
+          value: formatAngka(luasSegitiga(a ?? 0, t ?? 0)),
           satuan: satuanLuas,
         ));
         hasil.add((
           nama: 'Keliling',
-          formula: 'Keliling = ${formatAngka(sa)} + ${formatAngka(sb)} + ${formatAngka(sc)}',
-          value: formatAngka(kelilingSegitiga(sa, sb, sc)),
+          formula: 'Keliling = ${formatAngka(sa ?? 0)} + ${formatAngka(sb ?? 0)} + ${formatAngka(sc ?? 0)}',
+          value: formatAngka(kelilingSegitiga(sa ?? 0, sb ?? 0, sc ?? 0)),
           satuan: satuanKeliling,
         ));
       }
@@ -401,30 +412,36 @@ _CalcResult calculate(String id, Map<String, double> values) {
       }
       break;
     case 'limas_segitiga':
-      final a = values['sisiA']!;
-      final b = values['sisiB']!;
-      final c = values['sisiC']!;
-      final t = values['tinggi']!;
-      if (a <= 0) errors['sisiA'] = 'Sisi harus lebih dari 0';
-      if (b <= 0) errors['sisiB'] = 'Sisi harus lebih dari 0';
-      if (c <= 0) errors['sisiC'] = 'Sisi harus lebih dari 0';
-      if (t <= 0) errors['tinggi'] = 'Tinggi limas harus lebih dari 0';
-      if (a + b <= c || a + c <= b || b + c <= a) {
+      final a = values['sisiA'];
+      final b = values['sisiB'];
+      final c = values['sisiC'];
+      final t = values['tinggi'];
+      if (a == null) { errors['sisiA'] = 'Sisi A belum terisi'; }
+      else if (a <= 0) { errors['sisiA'] = 'Sisi harus lebih dari 0'; }
+      if (b == null) { errors['sisiB'] = 'Sisi B belum terisi'; }
+      else if (b <= 0) { errors['sisiB'] = 'Sisi harus lebih dari 0'; }
+      if (c == null) { errors['sisiC'] = 'Sisi C belum terisi'; }
+      else if (c <= 0) { errors['sisiC'] = 'Sisi harus lebih dari 0'; }
+      if (t == null) { errors['tinggi'] = 'Tinggi belum terisi'; }
+      else if (t <= 0) { errors['tinggi'] = 'Tinggi limas harus lebih dari 0'; }
+      // Validasi ketidaksamaan segitiga hanya setelah semua sisi > 0.
+      if (a != null && b != null && c != null && a > 0 && b > 0 && c > 0 &&
+          (a + b <= c || a + c <= b || b + c <= a)) {
         errors['sisiC'] = 'Sisi alas tidak dapat membentuk segitiga';
       }
       if (errors.isEmpty) {
-        final sHeron = (a + b + c) / 2;
+        final sHeron = ((a ?? 0) + (b ?? 0) + (c ?? 0)) / 2;
         hasil.add((
           nama: 'Volume',
           formula:
-              'Volume = ⅓ × luas alas(Heron) × t = ⅓ × ${formatAngka(math.sqrt(sHeron * (sHeron - a) * (sHeron - b) * (sHeron - c)))} × ${formatAngka(t)}',
-          value: formatAngka(volumeLimasSegitiga(a, b, c, t)),
+              'Volume = ⅓ × luas alas(Heron) × t = ⅓ × ${formatAngka(math.sqrt(sHeron * (sHeron - (a ?? 0)) * (sHeron - (b ?? 0)) * (sHeron - (c ?? 0))))} × ${formatAngka(t ?? 0)}',
+          value: formatAngka(volumeLimasSegitiga(a ?? 0, b ?? 0, c ?? 0, t ?? 0)),
           satuan: satuanVolume,
         ));
         hasil.add((
           nama: 'Luas Permukaan',
           formula: 'Luas = luas alas + ½ × keliling × apotema',
-          value: formatAngka(luasPermukaanLimasSegitiga(a, b, c, t)),
+          value: formatAngka(luasPermukaanLimasSegitiga(a ?? 0, b ?? 0, c ?? 0, t ?? 0)),
           satuan: satuanLuas,
         ));
       }
